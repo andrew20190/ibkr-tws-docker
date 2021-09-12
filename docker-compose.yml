@@ -11,6 +11,3 @@ services:
       - VNC_PASSWORD=${VNC_PASSWORD}
       - TWS_USER=${TWS_USER}
       - TWS_PASS=${TWS_PASS}
-      #- TWS_PATH=/root/Jts
-      #- TWS_CONFIG_PATH=/root/Jts
-      #- JAVA_PATH=/opt/i4j_jres/1.8.0_152-tzdata2019c/
