@@ -9,16 +9,18 @@ RUN  apt-get update \
   && apt-get install -y libxtst6 \
   && apt-get install -y libxrender1 \
   && apt-get install -y libxi6 \
-	&& apt-get install -y x11vnc \
+  && apt-get install -y x11vnc \
   && apt-get install -y software-properties-common \
   && apt-get install -y dos2unix \
   && apt-get install -y xdotool \
-  && apt-get install -y fluxbox
+  && apt-get install -y fluxbox \
+  && apt-get install -y libgtk-3-0 libnss3 openjfx libgbm1
 
 # Download TWS
 RUN mkdir -p /opt/TWS
 WORKDIR /opt/TWS
 RUN wget -q https://download2.interactivebrokers.com/installers/tws/latest-standalone/tws-latest-standalone-linux-x64.sh
+# if you previously have downloaded a tws offline installer, comment out the prior line, uncomment the next
 #COPY tws-latest-standalone-linux-x64.sh /opt/TWS/
 RUN chmod a+x  tws-latest-standalone-linux-x64.sh
 # install TWS, replies to prompt about where to install to, n to whether to run
@@ -40,16 +42,15 @@ RUN chmod -R 777 /usr/bin/xvfb-daemon-run \
 
 RUN dos2unix /usr/bin/xvfb-daemon-run /etc/init.d/xvfb /etc/init.d/vnc 
 
-# cleanup. No need to keep big fat file around
-#RUN rm /opt/TWS/tws-latest-standalone-linux-x64.sh
-
-
-# a couple missing dependencies the TWS Java setup needs
-RUN apt-get install -y libgtk-3-0 libnss3 openjfx libgbm1
+# cleanup, even though this is going to a bloated container, 
+# no need to keep even more cruft floating around our registry
+RUN rm /opt/TWS/tws-latest-standalone-linux-x64.sh
 
 COPY fluxboxstartup.sh /startup.sh
 RUN chmod ugo+rx  /startup.sh
 
+# minimal jts.ini to ensure ssl, etc.
+# full settings should get downloaded upon connection
 COPY ib/jts.ini /root/Jts/jts.ini
 
 CMD /usr/bin/xvfb-daemon-run /startup.sh 
